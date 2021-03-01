@@ -1,65 +1,95 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
+import {
+  Typography,
+  Container,
+  Card,
+  CardActionArea,
+  CardContent,
+  Grid,
+  CardMedia,
+  Button,
+} from '@material-ui/core'
 
-export default function Home() {
+import Moment from 'react-moment'
+
+import { makeStyles } from '@material-ui/core/styles'
+
+const useStyle = makeStyles(theme => ({
+  root: {
+    maxWidth: 400,
+  },
+  media: {
+    height: 140,
+  },
+}))
+
+export default function Home({ data: { articles } }) {
+  const classes = useStyle()
+
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
+    <>
+      <header>
+        <Container>
+          <Typography
+            variant="h1"
+            align="center"
+            style={{
+              fontWeight: 'bold',
+              fontSize: '1.6rem',
+              marginTop: '1.4rem',
+              textTransform: 'uppercase',
+            }}
           >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
+            Top Readers{' '}
+          </Typography>
+        </Container>
+      </header>
+      <main style={{ marginTop: '1.5rem' }}>
+        <Container>
+          <Grid container spacing={4} alignItems="center" justify="center">
+            {articles &&
+              articles.map((article, index) => (
+                <Grid item xs={12} sm={12} md={6} lg={4} key={index}>
+                  <Card className={classes.root} raised={true}>
+                    <CardMedia
+                      image={article.urlToImage}
+                      className={classes.media}
+                      component="img"
+                    />
+                    <CardContent>
+                      <Typography variant="h5" gutterBottom>
+                        {article.title}
+                      </Typography>
+                      <Typography variant="subtitle1" gutterBottom align="left">
+                        <Moment fromNow>{article.publishedAt}</Moment>
+                      </Typography>
+                      <Typography variant="body2" gutterBottom component="p">
+                        {article.description}
+                      </Typography>
+                    </CardContent>
+                    <CardActionArea style={{ paddingLeft: '0.5rem' }}>
+                      <Button variant="text" color="primary" href={article.url}>
+                        View More
+                      </Button>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              ))}
+          </Grid>
+        </Container>
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+    </>
   )
+}
+
+export async function getStaticProps() {
+  // fetch the news from the news API
+  const res = await fetch(
+    `http://newsapi.org/v2/top-headlines?country=ng&apiKey=${process.env.api_key}`,
+  )
+
+  const data = await res.json()
+
+  return {
+    props: { data },
+  }
 }
