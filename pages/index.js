@@ -84,7 +84,7 @@ export default function Home({ data: { articles } }) {
 export async function getStaticProps() {
   // fetch the news from the news API
   const res = await fetch(
-    `http://newsapi.org/v2/top-headlines?country=ng&apiKey=${process.env.api_key}`,
+    `http://newsapi.org/v2/top-headlines?country=ng&apiKey=3b684679c5394b4ba667ce2730790313`,
   )
 
   const data = await res.json()
